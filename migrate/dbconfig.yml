@@ -1,0 +1,11 @@
+development:
+  dialect: postgres
+  datasource: host=localhost port=5432 user=${USER} dbname=godb password=${PASSWORD} sslmode=disable
+  dir: migrations
+  table: go_base_migrations
+
+test:
+  dialect: postgres
+  datasource: host=test.gobase.com port=5432 user=postgres dbname=godb password=gopass sslmode=disable
+  dir: migrations
+  table: go_base_migrations
