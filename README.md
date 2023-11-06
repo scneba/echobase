@@ -95,11 +95,11 @@ Run the postman test `Add User Success` and it should be successful.
 
 ### File structure
 
-**--migrate**
+**--migrate** \
 &nbsp;&nbsp;--migrations/ file contains all migrations \
 &nbsp;&nbsp;--dbconfig.yml file contains configuration for sql-migrate tool. \
 
---**pkg**
+--**pkg** \
 &nbsp;&nbsp; **--api** functions which receive the api calls from the routes and calls the services. They also write the responses from the services. \
 &nbsp;&nbsp; **--database** functions to connect to the database and perform any db operation. \
 &nbsp;&nbsp; **--models** all database models used to connect to the database. \
