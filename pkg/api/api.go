@@ -1,33 +1,28 @@
 package api
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"net/http"
-
+	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"gobase.com/base/pkg/registering"
 )
 
-func RegisterUser(service registering.RegisteringInterface) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		user := registering.User{}
-		bodyBytes, err := ioutil.ReadAll(r.Body)
+func RegisterUser(service registering.RegisteringInterface) func(c echo.Context) error {
+	return func(c echo.Context) error {
+		user := new(registering.User)
+		//values := echo.QueryParamsBinder(c)
+		//values.String("name", &user.FirstName)
+
+		err := c.Bind(user)
 		if err != nil {
-			//write error HTTP request failed to read the body
-			writeError(w, errors.New("Failed to read content"), nil)
-			return
+			writeError(c, errors.New("Failed to read content"), nil)
+			return nil
 		}
-		if err = json.Unmarshal(bodyBytes, &user); err != nil {
-			//write error failed to unmarshal
-			writeError(w, errors.New("Failed to unmarshal content"), nil)
-			return
-		}
-		id, regErrors := service.RegisterUser(user)
+		id, regErrors := service.RegisterUser(*user)
 		if len(regErrors) > 0 {
-			writeErrors(w, regErrors, nil)
-			return
+			writeErrors(c, regErrors, nil)
+			return nil
 		}
-		writeJSON(w, id)
+		writeJSON(c, id)
+		return nil
 	}
 }

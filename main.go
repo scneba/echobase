@@ -2,15 +2,15 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"strconv"
 
 	"gobase.com/base/config"
 
 	"gobase.com/base/pkg/database"
 
-	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	migrate "github.com/rubenv/sql-migrate"
 )
 
@@ -39,9 +39,11 @@ func main() {
 
 	service := initializeServices(database.Db)
 
-	router := mux.NewRouter()
-	initializeRoutes(router, service)
-
-	http.ListenAndServe(":5010", router)
+	//router := mux.NewRouter()
+	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	initializeRoutes(e, service)
+	e.Logger.Fatal(e.Start(":5010"))
 
 }

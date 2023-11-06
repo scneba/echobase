@@ -1,6 +1,6 @@
 
 -- +migrate Up
-CREATE SCHEMA  accounts;
+CREATE SCHEMA  main;
 
 -- +migrate Down
-DROP SCHEMA accounts CASCADE;
+DROP SCHEMA main CASCADE;

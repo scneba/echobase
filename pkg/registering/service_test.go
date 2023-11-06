@@ -1,57 +1,94 @@
-package registering
+package registering_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/suite"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	"gobase.com/base/pkg/registering"
 )
 
-type mockDbRepo struct {
-	mock.Mock
+type MockDatabaseRepository struct {
+	registerUserFunc func(user registering.User) (uuid.UUID, error)
+	userExistsFunc   func(user registering.User) (bool, error)
 }
 
-func (m *mockDbRepo) RegisterUser(user User) (id uuid.UUID, err error) {
-	args := m.Called(user)
-	return args.Get(0).(uuid.UUID), args.Error(1)
-}
-func (m *mockDbRepo) UserExists(user User) (unique bool, err error) {
-	args := m.Called(user)
-	return args.Bool(0), args.Error(1)
+func (m *MockDatabaseRepository) RegisterUser(user registering.User) (uuid.UUID, error) {
+	return m.registerUserFunc(user)
 }
 
-type RegisteringTestSuite struct {
-	suite.Suite
-	RegisteringInterface
-	*mockDbRepo
+func (m *MockDatabaseRepository) UserExists(user registering.User) (bool, error) {
+	return m.userExistsFunc(user)
 }
 
-func (s *RegisteringTestSuite) SetupTest() {
-	// create mocks and initialize service for testing
-	s.mockDbRepo = new(mockDbRepo)
-	s.RegisteringInterface = NewRegisteringService(
-		s.mockDbRepo,
+var _ = Describe("Registering Service", func() {
+	var (
+		serviceInstance registering.RegisteringInterface
+		mockDatabase    *MockDatabaseRepository
+		user            registering.User
 	)
-}
-func (s *RegisteringTestSuite) TearDownTest() {
-	s.mockDbRepo.AssertExpectations(s.T())
-}
-func TestRegisteringService(t *testing.T) {
-	suite.Run(t, new(RegisteringTestSuite))
-}
 
-func (s *RegisteringTestSuite) TestUserRegisterationSuccess() {
+	BeforeEach(func() {
+		mockDatabase = &MockDatabaseRepository{}
+		serviceInstance = registering.NewRegisteringService(mockDatabase)
+		user = registering.User{
+			FirstName:   "John",
+			LastName:    "Doe",
+			Username:    "johndoe",
+			Email:       "john.doe@example.com",
+			PhoneNumber: "1234567890",
+		}
+	})
 
-	payload := fakeUser()
-	userID := newUUID()
-	s.mockDbRepo.On("RegisterUser", payload).Return(userID, nil)
-	s.mockDbRepo.On("UserExists", payload).Return(false, nil)
-	id, err := s.RegisteringInterface.RegisterUser(payload)
-	s.Nil(err)
-	s.True(*id == userID)
-}
+	Describe("RegisterUser", func() {
+		It("should successfully register a user", func() {
+			// Mock the RegisterUser function to return a UUID and no error
+			mockDatabase.registerUserFunc = func(user registering.User) (uuid.UUID, error) {
+				return uuid.New(), nil
+			}
+			mockDatabase.userExistsFunc = func(user registering.User) (bool, error) {
+				return false, nil
+			}
 
-func fakeUser() User {
-	return User{FirstName: "stk", LastName: "himself", Address: "The STK's", Username: "stk", Email: "stk@gmail.com", PhoneNumber: "+23784949384943"}
+			id, errs := serviceInstance.RegisterUser(user)
+			Expect(errs).To(BeEmpty())
+			Expect(id).NotTo(BeNil())
+		})
+
+		It("should handle registration errors", func() {
+			mockDatabase.userExistsFunc = func(user registering.User) (bool, error) {
+				return false, nil
+			}
+			// Mock the RegisterUser function to return an error
+			mockDatabase.registerUserFunc = func(user registering.User) (uuid.UUID, error) {
+				return uuid.UUID{}, fmt.Errorf("registration failed")
+			}
+
+			id, errs := serviceInstance.RegisterUser(user)
+			Expect(errs).NotTo(BeEmpty())
+			Expect(len(errs)).To(Equal(1))
+			Expect(errs[0].Error()).To(Equal("registration failed"))
+			Expect(id).To(BeNil())
+		})
+
+		It("should handle validation errors", func() {
+			user = registering.User{
+				// Incomplete user data to trigger validation errors
+			}
+			mockDatabase.userExistsFunc = func(user registering.User) (bool, error) {
+				return false, nil
+			}
+
+			id, errs := serviceInstance.RegisterUser(user)
+			Expect(errs).NotTo(BeEmpty())
+			Expect(id).To(BeNil())
+		})
+	})
+})
+
+func TestBooks(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "Registering Suite")
 }

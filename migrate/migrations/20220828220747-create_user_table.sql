@@ -1,6 +1,6 @@
 
 -- +migrate Up
-CREATE TABLE accounts.users(
+CREATE TABLE main.users(
     id uuid NOT NULL,
     first_name character varying(100) NOT NULL,
     last_name character varying(100) NOT NULL,
@@ -15,4 +15,4 @@ CREATE TABLE accounts.users(
     date_updated_utc timestamp without time zone
 );
 -- +migrate Down
-DROP TABLE accounts.users;
+DROP TABLE main.users;
