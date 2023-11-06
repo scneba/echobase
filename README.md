@@ -96,19 +96,19 @@ Run the postman test `Add User Success` and it should be successful.
 ### File structure
 
 **--migrate**
-&nbsp;&nbsp;--migrations/ file contains all migrations
-&nbsp;&nbsp;--dbconfig.yml file contains configuration for sql-migrate tool.
+&nbsp;&nbsp;--migrations/ file contains all migrations \
+&nbsp;&nbsp;--dbconfig.yml file contains configuration for sql-migrate tool. \
 
 --**pkg**
-&nbsp;&nbsp; **--api** functions which receive the api calls from the routes and calls the services. They also write the responses from the services.
-&nbsp;&nbsp; **--database** functions to connect to the database and perform any db operation.
-&nbsp;&nbsp; **--models** all database models used to connect to the database.
-&nbsp;&nbsp; **--registering, ...ing** Folders ending in `ing` are the services which have all the business logic. They have the **service.go** file which has the logic and the **service_test.go** file which has the tests of the logic. The **errors.go** file contains all the errors. The rest of the folders contain structs used in the business logic.
-&nbsp;&nbsp; **--postman** This contains the postman tests
-&nbsp;&nbsp; **--.env.example** This contains all the variables which are application secrets. To run the code, you will have to create a `.env` file from this file and change all the variables to the ones you use locally.
-&nbsp;&nbsp; **--main.go** The main file which connects to db and services and also starts running the code on the specified port (5010) in this case.
-&nbsp;&nbsp; **--services.go** This file initializes all services.
-&nbsp;&nbsp; **--routes** This file contains all the routes of the project.
+&nbsp;&nbsp; **--api** functions which receive the api calls from the routes and calls the services. They also write the responses from the services. \
+&nbsp;&nbsp; **--database** functions to connect to the database and perform any db operation. \
+&nbsp;&nbsp; **--models** all database models used to connect to the database. \
+&nbsp;&nbsp; **--registering, ...ing** Folders ending in `ing` are the services which have all the business logic. They have the **service.go** file which has the logic and the **service_test.go** file which has the tests of the logic. The **errors.go** file contains all the errors. The rest of the folders contain structs used in the business logic. \
+&nbsp;&nbsp; **--postman** This contains the postman tests \
+&nbsp;&nbsp; **--.env.example** This contains all the variables which are application secrets. To run the code, you will have to create a `.env` file from this file and change all the variables to the ones you use locally. \
+&nbsp;&nbsp; **--main.go** The main file which connects to db and services and also starts running the code on the specified port (5010) in this case. \
+&nbsp;&nbsp; **--services.go** This file initializes all services. \
+&nbsp;&nbsp; **--routes** This file contains all the routes of the project. \
 
 ### Testing
 
