@@ -1,4 +1,4 @@
-# Golang Base Project
+# Golang (Echo + Ginkgo) Starter Project
 
 ## Packages and Resources
 
